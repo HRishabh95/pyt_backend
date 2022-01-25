@@ -1,6 +1,7 @@
 import pandas as pd
 from pymongo import MongoClient
 import json
+from misinformation_score import *
 
 def mongoimport(csv_path, db_name, coll_name, client):
     """ Imports a csv file at path csv_name to a mongo colection
