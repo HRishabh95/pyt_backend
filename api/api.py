@@ -6,6 +6,7 @@ from pymongo import MongoClient
 import atexit
 import signal
 from flask_cors import CORS
+from index_csv import *
 
 app = flask.Flask(__name__)
 CORS(app)
@@ -33,10 +34,40 @@ def cleanup():
 def query_records():
     #name = request.get_json(force=True)
     name=request.args.get('query')
+    mis_check=request.args.get('mis_check')
     #name='corona side effects'
-    result = search(name,model_path,client)
+    result = search(name,model_path,client,mis_check
+                    )
     payload = json.loads(result.to_json(orient='records'))
     return jsonify(payload)
+
+
+@app.route('/updateRel',methods=['POST'])
+def updaterel():
+    data = request.get_json(silent=True)
+    doc_id=data.get('docid')
+    relevance=data.get('rel')
+    query=data.get('query')
+    coll_name='annotations'
+    mongoimport_one(doc_id,relevance,query,dbname,coll_name,client)
+    return json.dumps(True)
+
+@app.route('/getRel',methods=['GET'])
+def get_rel():
+    query=request.args.get('query')
+    docid=request.args.get('docid')
+    ret_files=mongofind_one(docid,query,dbname,client,coll_name='annotations')
+    if ret_files:
+        return json.dumps(ret_files['rel'])
+    else:
+        return json.dumps(True)
+
+@app.route('/getAnno',methods=['GET'])
+def get_anno():
+    ret_files=mongofind_all(dbname,client,coll_name='annotations')
+    ret_files=json.loads(json_util.dumps(ret_files))
+    return jsonify(ret_files)
+
 
 
 app.run(host="127.0.0.1", port=5000)

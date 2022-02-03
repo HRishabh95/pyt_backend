@@ -5,17 +5,17 @@ from index_csv import mongo_find_many,mongoimport
 if not pt.started():
   pt.init()
 
-from misinformation_score import process_data
+from misinformation_score import process_misinformation
 model_path='./pyterrier_model/BM25_baseline_cor'
 
 
-
-def search(search_term,model_path,client):
+def search(search_term,model_path,client,mis_check,wmodel='BM25'):
 
   if os.path.isfile('%s/data.properties' % model_path):
     indexref = pt.IndexRef.of('%s/data.properties' % model_path)
 
-    BM25 = pt.BatchRetrieve(indexref, num_results=50, controls={"wmodel": "BM25"}, properties={
+
+    BM25 = pt.BatchRetrieve(indexref, num_results=50, controls={"wmodel": wmodel}, properties={
       'tokeniser': 'UTFTokeniser',
       'termpipelines': 'PorterStemmer', })
 
@@ -26,9 +26,9 @@ def search(search_term,model_path,client):
     merged_result=pd.merge(search_result,df_map_result,on='docno')
     cleaned_merged_results=merged_result[['docno','rank','score','text']]
 
-    print('Getting Misinformation score')
-
-    all_scores=process_data(cleaned_merged_results)
-    return all_scores
+    if mis_check=='true':
+      print('Getting Misinformation score')
+      cleaned_merged_results=process_misinformation(cleaned_merged_results)
+    return cleaned_merged_results
 
 

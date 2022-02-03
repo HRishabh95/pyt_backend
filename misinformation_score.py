@@ -84,7 +84,7 @@ def get_sent_emb(x_text,fe='bert',misinfo_path='/Users/ricky/PycharmProjects/pyt
         print('BERT Modeling')
     return embedding_matrix
 
-def process_data(ranked_df):
+def process_misinformation(ranked_df):
     d=load_data(ranked_df.text.values)
     misinfo_path='/Users/ricky/PycharmProjects/pyt_backend/misinfo'
     x_test_fe=get_sent_emb(d,fe='PUB')

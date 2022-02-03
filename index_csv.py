@@ -1,6 +1,7 @@
 import pandas as pd
 from pymongo import MongoClient
 import json
+from bson import json_util
 from misinformation_score import *
 
 def mongoimport(csv_path, db_name, coll_name, client):
@@ -15,6 +16,30 @@ def mongoimport(csv_path, db_name, coll_name, client):
     return x.inserted_ids
 
 #mongoimport('./tmp.csv','tmp','tmp1')
+
+def mongoimport_one(docid,rel,query,db_name,coll_name,client):
+    db=client[db_name]
+    coll = db[coll_name]
+    oldquery={'docid':docid,'query':query}
+    newquery={"$set":{'rel':rel}}
+    x=coll.update_one(oldquery,newquery,upsert=True)
+    return x.upserted_id
+
+def mongofind_one(docid,query,db_name,client,coll_name):
+    db = client[db_name]
+    coll = db[coll_name]
+    x=coll.find_one({'docid':docid,'query':query})
+    return x
+
+def mongofind_all(db_name,client,coll_name):
+    db=client[db_name]
+    coll=db[coll_name]
+    docs=coll.find()
+    final_list=[]
+    for doc in docs:
+        final_list.append(doc)
+    #     final_list.append([doc['docid'],doc['query'],doc['rel']])
+    return final_list
 
 def mongo_find(db_name, coll_name, db_url='localhost', db_port=27017):
     mongo_url = 'mongodb://mongo_user:mongo_secret@%s:%s' % (db_url, db_port)
