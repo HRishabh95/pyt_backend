@@ -43,13 +43,13 @@ def query_records():
 
 
 @app.route('/updateRel',methods=['POST'])
-def updaterel():
+def post_rel_doc():
     data = request.get_json(silent=True)
     doc_id=data.get('docid')
     relevance=data.get('rel')
     query=data.get('query')
     coll_name='annotations'
-    mongoimport_one(doc_id,relevance,query,dbname,coll_name,client)
+    mongoimport_onedoc(doc_id,relevance,query,dbname,coll_name,client)
     return json.dumps(True)
 
 @app.route('/getRel',methods=['GET'])
@@ -67,6 +67,24 @@ def get_anno():
     ret_files=mongofind_all(dbname,client,coll_name='annotations')
     ret_files=json.loads(json_util.dumps(ret_files))
     return jsonify(ret_files)
+
+@app.route('/updateRelSent',methods=['POST'])
+def post_rel_sent():
+    data = request.get_json(silent=True)
+    doc_id = data.get('docid')
+    query = data.get('query')
+    sent = data.get('sent')
+    coll_name='sent_annotations'
+    mongoimport_onesent(doc_id, query, sent, dbname, coll_name, client)
+    return json.dumps(True)
+
+@app.route('/getRelSent',methods=['GET'])
+def get_rel_sent():
+    query = request.args.get('query')
+    docid = request.args.get('docid')
+    coll_name="sent_annotations"
+    ret_files=mongofind_allsent(docid,query,dbname,client,coll_name)
+    return jsonify(json.loads(json_util.dumps(ret_files)))
 
 
 

@@ -17,7 +17,7 @@ def mongoimport(csv_path, db_name, coll_name, client):
 
 #mongoimport('./tmp.csv','tmp','tmp1')
 
-def mongoimport_one(docid,rel,query,db_name,coll_name,client):
+def mongoimport_onedoc(docid,rel,query,db_name,coll_name,client):
     db=client[db_name]
     coll = db[coll_name]
     oldquery={'docid':docid,'query':query}
@@ -25,11 +25,27 @@ def mongoimport_one(docid,rel,query,db_name,coll_name,client):
     x=coll.update_one(oldquery,newquery,upsert=True)
     return x.upserted_id
 
+def mongoimport_onesent(docid,query,sent,db_name,coll_name,client):
+    db=client[db_name]
+    coll = db[coll_name]
+    oldquery={'docid':docid,'query':query,'sent':sent}
+    x=coll.insert_one(oldquery)
+    return x
+
 def mongofind_one(docid,query,db_name,client,coll_name):
     db = client[db_name]
     coll = db[coll_name]
     x=coll.find_one({'docid':docid,'query':query})
     return x
+
+def mongofind_allsent(docid,query,db_name,client,coll_name):
+    db = client[db_name]
+    coll = db[coll_name]
+    docs=coll.find({'docid':docid,'query':query})
+    final_list=[]
+    for doc in docs:
+        final_list.append(doc)
+    return final_list
 
 def mongofind_all(db_name,client,coll_name):
     db=client[db_name]
