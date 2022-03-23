@@ -8,7 +8,7 @@ def mongoimport(csv_path, db_name, coll_name, client):
     """
     db = client[db_name]
     coll = db[coll_name]
-    data = pd.read_csv(csv_path)
+    data = pd.read_csv(csv_path,index_col=0)
     payload = json.loads(data.to_json(orient='records'))
     x=coll.insert_many(payload)
     return x.inserted_ids
@@ -38,22 +38,18 @@ def mongo_find_one(ids,db_name, coll_name, db_url='localhost', db_port=27017):
 
 
 def mongo_find_many(search_result,db_name, coll_name, client):
-    # db_name='trec'
-    # coll_name='trec'
-    # db_url='localhost'
-    # db_port=27017
 
     db = client[db_name]
     coll = db[coll_name]
     final_text_list=[]
     ids=search_result.docno.values
     results=coll.find({
-        "id": { "$in": [i for i in ids]}})
+        "docno": { "$in": [i for i in ids]}})
 
     for row in results:
-        final_text_list.append([row['id'],row['text']])
+        final_text_list.append([row['docno'],row['title'],row['summary_des'],row['eligibility']])
 
     df=pd.DataFrame(final_text_list)
-    df.columns=['docno','text']
+    df.columns=['docno','title','summary_des','eligibility']
     return df
 
