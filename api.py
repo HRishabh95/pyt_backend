@@ -5,7 +5,7 @@ from search_api import *
 from pymongo import MongoClient
 from flask_cors import CORS
 from core import argsparser
-
+from index_csv import mongoimport
 
 app = flask.Flask(__name__)
 CORS(app)
@@ -34,17 +34,21 @@ def before_first_request_func():
     ids = mongoimport('%s/mapping.csv' % mapping_path, dbname, coll_name, client)
 
 
+if mongo_clean:
+    cleanup()
+
+if mongo_build:
+    before_first_request_func()
+
+
 @app.route('/search', methods=['GET'])
 def query_records():
-    if mongo_build:
-        before_first_request_func()
     request_args = request.get_json(force=True)
     pid,querys=request_args['id'],request_args['query']
-    result = process_query(querys,mapping_path,client,dbname,coll_name)
+    result = process_query(pid,querys,mapping_path,client,dbname,coll_name)
     payload = json.loads(result.to_json(orient='records'))
-    if mongo_clean:
-        cleanup()
     return jsonify(payload)
+
 
 
 app.run(host=ARGS.host, port=ARGS.port)

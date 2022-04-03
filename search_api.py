@@ -1,7 +1,7 @@
 import pyterrier as pt
 import os
 import pandas as pd
-from index_csv import mongo_find_many,mongoimport
+from index_csv import mongo_find_many,mongo_find_explain,mongoimport
 if not pt.started():
   pt.init()
 import mcdm
@@ -24,7 +24,7 @@ def search(query,model_path):
 
 
 
-def process_query(querys,model_path,client,dbname,coll_name):
+def process_query(pid,querys,model_path,client,dbname,coll_name):
   query_1,query_2=querys.split("|")[0],querys.split("|")[-1]
 
   # main criteria
@@ -55,8 +55,11 @@ def process_query(querys,model_path,client,dbname,coll_name):
   merged_result=pd.merge(topsis,df_map_result,on='docno')
   cleaned_merged_result=merged_result[['docno','title','summary_des','eligibility']]
 
+  explain_df=mongo_find_explain(pid,cleaned_merged_result,dbname,client)
+  explain_merged_df=pd.merge(explain_df,cleaned_merged_result,on='docno')
+  cleaned_explain_merged_df=explain_merged_df[['docno','title','summary_des','eligibility','explain']]
 
-  return cleaned_merged_result
+  return cleaned_explain_merged_df
 
 
 def concat_query_scores_per_field(df1, df2, df3):
