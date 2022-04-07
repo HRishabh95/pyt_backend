@@ -36,7 +36,9 @@ pip install -r requirements.txt
 python api.py
 ```
 
+## Indexed file
 
+Download it from this [link](https://drive.google.com/drive/folders/1hBdYQ4GPy7CAUKCPF_c2IdJ99onhG9ba?usp=sharing)
 
 ## API for search
 
