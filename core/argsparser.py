@@ -46,7 +46,7 @@ def prepare_local_machine_args(parser):
                         default="clinical_trails")
 
     parser.add_argument('--mongo_build', action=EnvDefault, envvar='MONGO_BUILD', type=int,
-                        default=0)
+                        default=1)
 
     parser.add_argument('--mongo_clean', action=EnvDefault, envvar='MONGO_CLEAN', type=int,
                         default=0)
