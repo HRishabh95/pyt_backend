@@ -3,3 +3,5 @@ python-terrier
 pandas
 flask
 mcdm
+Cpython
+flask-cors

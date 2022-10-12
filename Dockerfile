@@ -6,7 +6,7 @@ RUN apt-get update
 RUN apt-get install -y apt-utils build-essential gcc
 
 RUN bash -c 'mkdir -p /usr/share/man/man{1,2,3,4,5,6,7,8}' && \
-  apt-get install -y openjdk-11-jre-headless && \
+  apt-get install -y openjdk-11*  && \
   rm -rf /usr/share/man/man
 
 

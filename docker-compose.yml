@@ -1,7 +1,7 @@
 version: "2"
 services:
   medcruise-retrieval-container:
-    image: docker.io/library/medcruise-retrieval:test
+    image: docker.io/library/medcruise-retrieval:latest
     container_name: medcruise-retrieval-api
     ports:
       - "8082:7778"
